@@ -1,6 +1,6 @@
 import csv
 from flask import Flask, render_template, request
-import plotly.graph_objs as go 
+import plotly.graph_objs as go
 import plotly.offline as pyo
 import yfinance as yf
 
@@ -20,6 +20,14 @@ def get_stock_data(symbol):
     except Exception as e:
         print(f"Error fetching Stock data: {e}")
         return None
+
+def get_voo_data():
+    voo_data = get_stock_data("VOO")
+    return voo_data
+
+def get_appl_data():
+    appl_data = get_stock_data("AAPL")
+    return appl_data
 
 def read_stock_symbols_from_csv(file_path='stock_symbols.csv'):
     symbols = []
@@ -41,11 +49,14 @@ def stock():
     stock_data = None
     suggestions = read_stock_symbols_from_csv()
     graph_html = None
-
+    voo_data= None
+    appl_data= None
 
     if request.method == 'POST':
         symbol = request.form['symbol'].upper()
         stock_data = get_stock_data(symbol)
+        voo_data = get_voo_data()
+        appl_data = get_appl_data()
 
     if symbol:
         try:
@@ -91,10 +102,8 @@ def stock():
         except Exception as e:
             print(f"Error fetching stock data: {e}")
 
-    return render_template('stock.html', symbol=symbol, stock_data=stock_data,
-                            suggestions=suggestions, graph_html=graph_html)
+    return render_template('stock.html', symbol=symbol, stock_data=stock_data, voo_data=voo_data,
+                            appl_data=appl_data, suggestions=suggestions, graph_html=graph_html)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-

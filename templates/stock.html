@@ -238,37 +238,43 @@
         <div class="statistics-container">
             <div class="statistics-item">
                 <p class="statistics-heading">P/E Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('trailingPE', 0) > 25 %}red-text{% endif %}">
+                <p class="statistics-value {% if stock_data.get('trailingPE', 0) > voo_data.get('trailingPE', 0) %}red-text{% endif %}">
                     {{ stock_data.get('trailingPE', '') }}
                 </p>
+                (vs VOO: {{ voo_data.get('trailingPE', '') }})
+                (vs APPL: {{ appl_data.get('trailingPE', '')}})
             </div>
         
             <div class="statistics-item">
                 <p class="statistics-heading">PEG Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('pegRatio', 0) < 1 %}red-text{% endif %}">
+                <p class="statistics-value {% if stock_data.get('pegRatio', 0) > appl_data.get('pegRatio', 0) %}red-text{% endif %}">
                     {{ stock_data.get('pegRatio', '') }}
                 </p>
+                (vs AAPL: {{ appl_data.get('pegRatio', '') }})
             </div>
         
             <div class="statistics-item">
                 <p class="statistics-heading">P/S Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('priceToSalesTrailing12Months', 0) > 2 %}red-text{% endif %}">
+                <p class="statistics-value {% if stock_data.get('priceToSalesTrailing12Months', 0) > appl_data.get('priceToSalesTrailing12Months', 0) %}red-text{% endif %}">
                     {{ stock_data.get('priceToSalesTrailing12Months', '') }}
                 </p>
+                (vs AAPL: {{ appl_data.get('priceToSalesTrailing12Months', '') }})
             </div>
         
             <div class="statistics-item">
                 <p class="statistics-heading">P/B Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('priceToBook', 0) > 2 %}red-text{% endif %}">
+                <p class="statistics-value {% if stock_data.get('priceToBook', 0) > appl_data.get('priceToBook', 0) %}red-text{% endif %}">
                     {{ stock_data.get('priceToBook', '') }}
                 </p>
+                (vs AAPL: {{ appl_data.get('priceToBook', '') }})
             </div>
         
             <div class="statistics-item">
                 <p class="statistics-heading">D/E Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('debtToEquity', 0) > 2 %}red-text{% endif %}">
+                <p class="statistics-value {% if stock_data.get('debtToEquity', 0) > appl_data.get('debtToEquity', 0) %}red-text{% endif %}">
                     {{ stock_data.get('debtToEquity', '') }}
                 </p>
+                (vs APPL: {{ appl_data.get('debtToEquity', '') }})
             </div>
         </div>
         {{ graph_html | safe }}
@@ -299,8 +305,6 @@
             </tbody>
         </table>
     {% endif %}
-    
 
-    
 </body>
 </html>
