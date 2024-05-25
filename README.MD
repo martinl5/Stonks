@@ -5,7 +5,7 @@
 
 Stonks is a user-friendly and feature-rich web application built with Flask, Plotly, and yfinance. It empowers users to access comprehensive stock information, visualize real-time price trends, and make informed investment decisions.
 
-In the late-night coding sessions and airport terminals, I transformed theoretical knowledge into practical implementation. The choice of technologies reflects both the class learnings from my Full Stack Web Development class and my personal interest in finance.
+Through late-night coding sessions in airport terminals, I transformed theoretical knowledge into practical implementation. The choice of technologies reflects both the class learnings from my Full Stack Web Development class and my personal interest in finance.
 
 Disclaimer: While Stonks offers valuable insights, it is crucial to note that the information provided is not intended as real financial advice. Users are encouraged to conduct thorough research and consult with financial professionals before making investment decisions. The app serves as a tool for information and analysis, but individual financial situations vary, and caution is advised in financial decision-making.
 
