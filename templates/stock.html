@@ -120,23 +120,33 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+
         .red-text {
-        color: red;
+            color: red;
         }
+
         .stock-price {
-        text-align: left;
+            text-align: left;
         }
+
         .statistics-container {
-        display: flex;
-        justify-content: space-between;
+            display: flex;
+            justify-content: space-between;
         }
+
         .statistics-item {
-        margin-right: 20px;
+            margin-right: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .statistics-item {
+                width: 100%;
+                margin-right: 0;
+            }
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
-        // JavaScript function to filter and display suggestions dynamically
         function filterSuggestions() {
             var input, filter, table, tr, td, i, txtValue;
             input = document.getElementById("symbol");
@@ -144,9 +154,8 @@
             table = document.getElementById("suggestionsTable");
             tr = table.getElementsByTagName("tr");
 
-            // Loop through all table rows, and hide those that don't match the search query
             for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[0]; // Assumes the symbol is in the first column
+                td = tr[i].getElementsByTagName("td")[0];
                 if (td) {
                     txtValue = td.textContent || td.innerText;
                     if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -183,7 +192,6 @@
             let hours = dateTime.getHours();
             let amPm = hours >= 12 ? 'PM' : 'AM';
 
-            // Convert to 12-hour format
             hours = hours % 12 || 12;
 
             let minutes = dateTime.getMinutes();
@@ -198,113 +206,148 @@
             $('#currentTime').html(time);
         }
 
-
-        getAmPm();
-        window.setInterval(getAmPm, 1000);
-        getDateTime();
-        window.setInterval(getDateTime, 1000);
+        $(document).ready(function() {
+            getAmPm();
+            setInterval(getAmPm, 1000);
+            getDateTime();
+            setInterval(getDateTime, 1000);
+        });
     </script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <div class="current-date-time-container">
-        Good&nbsp;<span id="ampmSpan"></span>,&nbsp;it is 
-        <div id="timeContainer">&nbsp;<span id="currentTime"></span></div>&nbsp;on 
-        <div id="dateContainer">&nbsp;<span id="currentDate"></span></div>
-    </div>
-    
-    <h1>Stonks?</h1>
-    <form action="/" method="post" id="stockForm">
-        <label for="symbol">Enter stock symbol:</label>
-        <input type="text" id="symbol" name="symbol" oninput="filterSuggestions()" list="symbols" value="{{ symbol }}" required>
-        <button type="submit">Get Information</button>
-    </form>
+    <header>
+        <div class="current-date-time-container">
+            Good&nbsp;<span id="ampmSpan"></span>,&nbsp;it is 
+            <div id="timeContainer">&nbsp;<span id="currentTime"></span></div>&nbsp;on 
+            <div id="dateContainer">&nbsp;<span id="currentDate"></span></div>
+        </div>
+        <h1>Stonks?</h1>
+    </header>
 
-    {% if stock_data %}
-        <h2 class="statistics-heading">Stock Information</h2>
+    <main>
+        <form action="/" method="post" id="stockForm">
+            <label for="symbol">Enter stock symbol:</label>
+            <input type="text" id="symbol" name="symbol" oninput="filterSuggestions()" list="symbols" value="{{ symbol }}" required>
+            <button type="submit">Get Information</button>
+        </form>
 
+        {% if stock_data %}
+            <section>
+                <h2 class="statistics-heading">Stock Information</h2>
+
+                <div class="statistics-container">
+                    <div class="statistics-item">
+                        <p class="statistics-heading">Symbol:</p>
+                        <p class="statistics-value">{{ stock_data.get('symbol', '') }}</p>
+                    </div>
+                
+                    <div class="statistics-item stock-price">
+                        <p class="statistics-heading">Price:</p>
+                        <p class="statistics-value stock-price">{{ stock_data.get('currentPrice', '') }}</p>
+                    </div>
+                </div>
+                
+                <div class="statistics-container">
+                    <div class="statistics-item">
+                        <p class="statistics-heading">P/E Ratio:</p>
+                        <p class="statistics-value {% if stock_data.get('trailingPE', 0) > voo_data.get('trailingPE', 0) %}red-text{% endif %}">
+                            {{ stock_data.get('trailingPE', '') }}
+                        </p>
+                        (vs VOO: {{ voo_data.get('trailingPE', '') }})
+                        (vs AAPL: {{ appl_data.get('trailingPE', '')}})
+                    </div>
+                
+                    <div class="statistics-item">
+                        <p class="statistics-heading">PEG Ratio:</p>
+                        <p class="statistics-value {% if stock_data.get('pegRatio', 0) > appl_data.get('pegRatio', 0) %}red-text{% endif %}">
+                            {{ stock_data.get('pegRatio', '') }}
+                        </p>
+                        (vs AAPL: {{ appl_data.get('pegRatio', '') }})
+                    </div>
+                
+                    <div class="statistics-item">
+                        <p class="statistics-heading">P/S Ratio:</p>
+                        <p class="statistics-value {% if stock_data.get('priceToSalesTrailing12Months', 0) > appl_data.get('priceToSalesTrailing12Months', 0) %}red-text{% endif %}">
+                            {{ stock_data.get('priceToSalesTrailing12Months', '') }}
+                        </p>
+                        (vs AAPL: {{ appl_data.get('priceToSalesTrailing12Months', '') }})
+                    </div>
+                
+                    <div class="statistics-item">
+                        <p class="statistics-heading">P/B Ratio:</p>
+                        <p class="statistics-value {% if stock_data.get('priceToBook', 0) > appl_data.get('priceToBook', 0) %}red-text{% endif %}">
+                            {{ stock_data.get('priceToBook', '') }}
+                        </p>
+                        (vs AAPL: {{ appl_data.get('priceToBook', '') }})
+                    </div>
+                
+                    <div class="statistics-item">
+                        <p class="statistics-heading">D/E Ratio:</p>
+                        <p class="statistics-value {% if stock_data.get('debtToEquity', 0) > appl_data.get('debtToEquity', 0) %}red-text{% endif %}">
+                            {{ stock_data.get('debtToEquity', '') }}
+                        </p>
+                        (vs AAPL: {{ appl_data.get('debtToEquity', '') }})
+                    </div>
+                </div>
+                {{ graph_html | safe }}
+            </section>
+        {% elif symbol and not stock_data %}
+            <section>
+                <h2 class="statistics-heading">Error</h2>
+                <p class="statistics-heading">Stock Information not found for Company:</p>
+                <p class="statistics-value">{{ symbol }}</p>
+            </section>
+        {% endif %}
         <div class="statistics-container">
             <div class="statistics-item">
-                <p class="statistics-heading">Symbol:</p>
-                <p class="statistics-value">{{ stock_data.get('symbol', '') }}</p>
-            </div>
-        
-            <div class="statistics-item stock-price">
-                <p class="statistics-heading">Price:</p>
-                <p class="statistics-value stock-price">{{ stock_data.get('currentPrice', '') }}</p>
-            </div>
-        </div>
-        
-        <div class="statistics-container">
-            <div class="statistics-item">
-                <p class="statistics-heading">P/E Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('trailingPE', 0) > voo_data.get('trailingPE', 0) %}red-text{% endif %}">
-                    {{ stock_data.get('trailingPE', '') }}
-                </p>
-                (vs VOO: {{ voo_data.get('trailingPE', '') }})
-                (vs APPL: {{ appl_data.get('trailingPE', '')}})
-            </div>
-        
-            <div class="statistics-item">
-                <p class="statistics-heading">PEG Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('pegRatio', 0) > appl_data.get('pegRatio', 0) %}red-text{% endif %}">
-                    {{ stock_data.get('pegRatio', '') }}
-                </p>
-                (vs AAPL: {{ appl_data.get('pegRatio', '') }})
-            </div>
-        
-            <div class="statistics-item">
-                <p class="statistics-heading">P/S Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('priceToSalesTrailing12Months', 0) > appl_data.get('priceToSalesTrailing12Months', 0) %}red-text{% endif %}">
-                    {{ stock_data.get('priceToSalesTrailing12Months', '') }}
-                </p>
-                (vs AAPL: {{ appl_data.get('priceToSalesTrailing12Months', '') }})
-            </div>
-        
-            <div class="statistics-item">
-                <p class="statistics-heading">P/B Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('priceToBook', 0) > appl_data.get('priceToBook', 0) %}red-text{% endif %}">
-                    {{ stock_data.get('priceToBook', '') }}
-                </p>
-                (vs AAPL: {{ appl_data.get('priceToBook', '') }})
-            </div>
-        
-            <div class="statistics-item">
-                <p class="statistics-heading">D/E Ratio:</p>
-                <p class="statistics-value {% if stock_data.get('debtToEquity', 0) > appl_data.get('debtToEquity', 0) %}red-text{% endif %}">
-                    {{ stock_data.get('debtToEquity', '') }}
-                </p>
-                (vs APPL: {{ appl_data.get('debtToEquity', '') }})
-            </div>
-        </div>
-        {{ graph_html | safe }}
-    {% elif symbol and not stock_data %}
-        <h2 class="statistics-heading">Error</h2>
-        <p class="statistics-heading">Stock Information not found for Company:</p>
-        <p class="statistics-value">{{ symbol }}</p>
-    {% endif %}
+                    {% if earnings_data %}
+                    <h2 class="statistics-heading">Earnings Calendar</h2>
+                    {% set break = False %}
+                    {% for key, dict_item in earnings_data.items() %}
+                        {% if key == 'Earnings Date' %}
+                            <p class="statistics-value">{{ key }}</p>
+                            {%for i in dict_item%}
+                            <p>{{ i.strftime('%Y-%m-%d') }}</p>
+                            {%endfor%}
+                            Hello
+                            {% set break = True %}
+                        {%elif not break%}
+                        <p class="statistics-value">{{ key }}</p>
+                        <p>{{ dict_item }}</p>
+                        {% endif %}
+                    {% endfor %}
 
-    {% if suggestions %}
-        <h2>Stock Suggestions</h2>
-        <table id="suggestionsTable">
-            <thead>
-                <tr>
-                    <th>Symbol</th>
-                    <th>Name</th>
-                    <th>Sector</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for suggestion in suggestions %}
-                <tr onclick="selectSuggestion('{{ suggestion.symbol }}')">
-                        <td>{{ suggestion.symbol }}</td>
-                        <td>{{ suggestion.name }}</td>
-                        <td>{{ suggestion.sector }}</td>
+                    {% elif symbol and not earnings %}
+                        <h2 class="statistics-heading">Error</h2>
+                        <p class="statistics-heading">Calendar not found for company:</p>
+                        <p class="statistics-value">{{ symbol }}</p>
+                    
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if suggestions %}
+            <h2>Stock Suggestions</h2>
+            <table id="suggestionsTable">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Sector</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-
+                </thead>
+                <tbody>
+                    {% for suggestion in suggestions %}
+                        <tr onclick="selectSuggestion('{{ suggestion.symbol }}')">
+                            <td>{{ suggestion.symbol }}</td>
+                            <td>{{ suggestion.name }}</td>
+                            <td>{{ suggestion.sector }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </main>
 </body>
 </html>

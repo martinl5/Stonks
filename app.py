@@ -20,6 +20,15 @@ def get_stock_data(symbol):
     except Exception as e:
         print(f"Error fetching Stock data: {e}")
         return None
+    
+def get_calendar(symbol):
+    try:
+        ticker = yf.Ticker(symbol)
+        calendar = ticker.calendar
+        return calendar
+    except Exception as e:
+        print(f"Error fetching earnings for {symbol}: {e}")
+        return None
 
 def get_voo_data():
     voo_data = get_stock_data("VOO")
@@ -51,16 +60,17 @@ def stock():
     graph_html = None
     voo_data= None
     appl_data= None
+    earnings_data = None
 
     if request.method == 'POST':
         symbol = request.form['symbol'].upper()
         stock_data = get_stock_data(symbol)
         voo_data = get_voo_data()
         appl_data = get_appl_data()
+        earnings_data = get_calendar(symbol)
 
     if symbol:
         try:
-            yf.pdr_override()
             df = yf.download(symbol, period='1mo', interval='5m') 
             df = df.dropna(subset=['Open', 'High', 'Low', 'Close'])
 
@@ -103,7 +113,8 @@ def stock():
             print(f"Error fetching stock data: {e}")
 
     return render_template('stock.html', symbol=symbol, stock_data=stock_data, voo_data=voo_data,
-                            appl_data=appl_data, suggestions=suggestions, graph_html=graph_html)
+                            appl_data=appl_data, suggestions=suggestions, graph_html=graph_html, 
+                            earnings_data = earnings_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
