@@ -303,18 +303,17 @@
             <div class="statistics-item">
                     {% if earnings_data %}
                     <h2 class="statistics-heading">Earnings Calendar</h2>
-                    {% set break = False %}
+                    
                     {% for key, dict_item in earnings_data.items() %}
                         {% if key == 'Earnings Date' %}
                             <p class="statistics-value">{{ key }}</p>
                             {%for i in dict_item%}
                             <p>{{ i.strftime('%Y-%m-%d') }}</p>
                             {%endfor%}
-                            Hello
-                            {% set break = True %}
-                        {%elif not break%}
-                        <p class="statistics-value">{{ key }}</p>
-                        <p>{{ dict_item }}</p>
+                        {%endif%}
+                        {%if key == 'Dividend Date' or key == 'Ex-Dividend Date'%}
+                            <p class="statistics-value">{{ key }}</p>
+                            <p>{{ dict_item }}</p>
                         {% endif %}
                     {% endfor %}
 
